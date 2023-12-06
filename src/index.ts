@@ -23,8 +23,17 @@ const createWindow = (): void => {
   // and load the index.html of the app.
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if (process.env.NODE_ENV === 'development') {
+    //콘솔로그를 터미널에 표시
+    mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
+      console.log(`${message} ${sourceId} (${line})`);
+    });
+
+    // Open the DevTools. 개발자도구을 열어준다.
+    // mainWindow.webContents.openDevTools();
+
+    console.log('Electron app start!!!');
+  }
 };
 
 // This method will be called when Electron has finished
@@ -38,6 +47,10 @@ app.on('ready', createWindow);
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Electron app closed!!!');
+    }
   }
 });
 
