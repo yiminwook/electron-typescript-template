@@ -1,15 +1,15 @@
 {
   "name": "builder",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "react-start": "react-scripts start",
     "react-build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "concurrently \"cross-env NODE_ENV=development BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\"",
-    "build": "yarn react-build && yarn build:win32",
+    "start": "concurrently \"cross-env NODE_ENV=development BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron ./public/main.js\"",
     "dist": "yarn build:win32",
+    "build": "yarn react-build && yarn dist",
     "build:osx": "electron-builder --mac",
     "build:linux32": "electron-builder --linux --ia32",
     "build:linux64": "electron-builder --linux --x64",
@@ -53,6 +53,7 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@typescript-eslint/parser": "^6.13.2",
     "bcrypt": "^5.1.1",
     "concurrently": "^8.2.2",
     "cross-env": "^7.0.3",
@@ -62,16 +63,24 @@
   },
   "build": {
     "productName": "react-electron",
-    "asar": true,
+    "asar": false,
     "appId": "org.sss.electron-react",
     "directories": {
-      "buildResources": "./build",
-      "output": "./dist",
-      "app": "."
+      "output": "./dist"
     },
     "files": [
-      "build/**/*",
-      "node_modules/**/*"
+      "./build/**",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
     ],
     "extends": null,
     "win": {
@@ -79,10 +88,12 @@
     },
     "nsis": {
       "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "allowElevation": false,
       "shortcutName": "react-electron",
       "artifactName": "react-electron-setup-${version}.${ext}",
-      "uninstallDisplayName": "react-electron-install",
-      "allowToChangeInstallationDirectory": false,
+      "uninstallDisplayName": "react-electron-uninstall",
       "createDesktopShortcut": true
     }
   }
